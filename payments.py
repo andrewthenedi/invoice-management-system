@@ -25,7 +25,7 @@ def create_payment():
 @payments_bp.route("/payment/<int:id>", methods=["GET"])
 @jwt_required()
 def get_payment(id):
-    payment = Payment.query.get(id)
+    payment = db.session.get(Payment, id)
     if payment is None:
         return jsonify({"message": "Payment not found"}), 404
     return {
@@ -39,7 +39,7 @@ def get_payment(id):
 @payments_bp.route("/payment/<int:id>", methods=["PUT"])
 @jwt_required()
 def update_payment(id):
-    payment = Payment.query.get(id)
+    payment = db.session.get(Payment, id)
     if payment is None:
         return jsonify({"message": "Payment not found"}), 404
     data = request.get_json()
@@ -54,7 +54,7 @@ def update_payment(id):
 @payments_bp.route("/payment/<int:id>", methods=["DELETE"])
 @jwt_required()
 def delete_payment(id):
-    payment = Payment.query.get(id)
+    payment = db.session.get(Payment, id)
     if payment is None:
         return jsonify({"message": "Payment not found"}), 404
     db.session.delete(payment)

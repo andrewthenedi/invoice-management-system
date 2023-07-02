@@ -1,6 +1,6 @@
 import pytest
 from app import create_app, db
-from models import User, Invoice
+from models import User, Invoice, Payment
 import datetime
 
 
@@ -21,15 +21,37 @@ def test_app():
             user.set_password(data["password"])
             user.id = data["id"]
             db.session.add(user)
-        # Within the "with app.app_context():" block in the test_app fixture, after adding users
         invoice_data = [
             {"id": 1, "date": datetime.datetime.now(), "amount": 1000.00, "user_id": 1},
             {"id": 2, "date": datetime.datetime.now(), "amount": 500.00, "user_id": 2},
         ]
         for data in invoice_data:
-            invoice = Invoice(date=data["date"], amount=data["amount"], user_id=data["user_id"])
+            invoice = Invoice(
+                date=data["date"], amount=data["amount"], user_id=data["user_id"]
+            )
             invoice.id = data["id"]
             db.session.add(invoice)
+        # Create payments
+        payment_data = [
+            {
+                "id": 1,
+                "date": datetime.datetime.now(),
+                "amount": 500.00,
+                "invoice_id": 1,
+            },
+            {
+                "id": 2,
+                "date": datetime.datetime.now(),
+                "amount": 250.00,
+                "invoice_id": 2,
+            },
+        ]
+        for data in payment_data:
+            payment = Payment(
+                date=data["date"], amount=data["amount"], invoice_id=data["invoice_id"]
+            )
+            payment.id = data["id"]
+            db.session.add(payment)
         db.session.commit()
 
     yield app
