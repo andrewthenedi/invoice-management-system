@@ -20,7 +20,7 @@ def create_invoice():
 
 
 def get_invoice_or_404(id):
-    invoice = Invoice.query.get(id)
+    invoice = db.session.get(Invoice, id)
     if invoice is None:
         return jsonify({"message": "Invoice not found"}), 404
     return invoice
@@ -29,7 +29,11 @@ def get_invoice_or_404(id):
 @invoices_bp.route("/invoice/<int:id>", methods=["GET"])
 @jwt_required()
 def get_invoice(id):
-    invoice = get_invoice_or_404(id)
+    invoice_or_error = get_invoice_or_404(id)
+    if isinstance(invoice_or_error, tuple):  # This means it's an error response
+        return invoice_or_error
+
+    invoice = invoice_or_error
     return {"id": invoice.id, "date": str(invoice.date), "amount": invoice.amount}
 
 
